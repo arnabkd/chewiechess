@@ -35,6 +35,17 @@ public class ChewieMotor extends AbstraktSjakkmotor {
     		  0, 5, 5, 5, 5, 5, 5, 0,
     		  0, 0, 0, 0, 0, 0, 0, 0
     };
+     
+     int materiellBonus[] = new int[] { // char is sufficient as well, also unsigned
+   		  0, 0, 0, 0, 0, 0, 0, 0,
+   		  0, 5, 5, 5, 5, 5, 5, 0,
+   		  0, 5, 15, 15, 15, 15, 5, 0,
+   		  0, 5, 15, 40, 40, 15, 5, 0,
+   		  0, 5, 15, 40, 40, 15, 5, 0,
+   		  0, 5, 15, 15, 15, 15, 5, 0,
+   		  0, 5, 5, 5, 5, 5, 5, 0,
+   		  0, 0, 0, 0, 0, 0, 0, 0
+   };
     
     
     private String LINJER = "ABCDEFGH";
@@ -53,21 +64,34 @@ public class ChewieMotor extends AbstraktSjakkmotor {
 	protected void finnBesteTrekk(final Posisjon posisjon) {
 		// Safer med et tilfeldit trekk først
 		settTilfeldigTrekk(posisjon);
-        settSpillFase(posisjon);
+        //settSpillFase(posisjon);
 
         final List<Trekk> alleLovligeTrekk = posisjon.alleTrekk();
         
-        //Posisjonsbonus
         int [] posisjoneringsBonus = trekkRangering(alleLovligeTrekk, sentrumsBonus);
+        int [] slagBonus = trekkRangeringEtterSlag(alleLovligeTrekk);
         
-        //Slagbonus
-        
-        //Soliditetsbonus
         
         for (int i = 0; i < alleLovligeTrekk.size(); i++){
-        	System.out.println(trekkTilString(alleLovligeTrekk.get(i)) + " Posisjonsbonus: " + posisjoneringsBonus[i]);
+        	System.out.println(trekkTilString(alleLovligeTrekk.get(i)) 
+        			+ " Posisjonsbonus: " + posisjoneringsBonus[i]
+        		    + " Slagbonus: " + slagBonus[i]);
         }
         
+	}
+	
+	private int[] trekkRangeringEtterSlag(List<Trekk> trekkListe){
+		int [] slagBonus = new int[trekkListe.size()];
+		
+		for (int i = 0; i < trekkListe.size(); i++){
+			Trekk trekk = trekkListe.get(i);
+			if (trekk.erSlag())
+			  slagBonus[i] = trekk.brikkeSomSlaas().verdi();
+			else
+			  slagBonus[i] = 0;
+		}
+		
+		return slagBonus;
 	}
 	
 	private int[] trekkRangering (List<Trekk> trekkListe, int [] ruteRangeringsTabell){
